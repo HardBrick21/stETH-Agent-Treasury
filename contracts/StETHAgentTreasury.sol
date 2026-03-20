@@ -77,6 +77,7 @@ contract StETHAgentTreasury is ReentrancyGuard {
         address agent,
         uint256 initialDeposit
     ) external onlyOwner nonReentrant {
+        require(agent != address(0), "Invalid agent address");
         require(treasuries[agent].agent == address(0), "Treasury exists");
         require(initialDeposit >= MIN_PRINCIPAL, "Below minimum principal");
         
@@ -102,6 +103,8 @@ contract StETHAgentTreasury is ReentrancyGuard {
      * @dev Calculates yield based on stETH rebasing
      */
     function updateYield(address agent) external {
+        require(agent != address(0), "Invalid agent address");
+        
         Treasury storage treasury = treasuries[agent];
         require(treasury.isActive, "Treasury not active");
         
@@ -133,6 +136,8 @@ contract StETHAgentTreasury is ReentrancyGuard {
         address agent,
         uint256 amount
     ) external onlyAgent(agent) returns (bytes32 requestId) {
+        require(agent != address(0), "Invalid agent address");
+        
         Treasury storage treasury = treasuries[agent];
         
         // Update yield first
@@ -140,7 +145,13 @@ contract StETHAgentTreasury is ReentrancyGuard {
         
         require(treasury.yieldAccumulated >= amount, "Insufficient yield");
         
-        requestId = keccak256(abi.encodePacked(agent, amount, block.timestamp, withdrawalCount));
+        requestId = keccak256(abi.encode(
+            agent,
+            amount,
+            block.timestamp,
+            withdrawalCount,
+            msg.sender
+        ));
         
         withdrawalRequests[requestId] = WithdrawalRequest({
             id: requestId,
@@ -169,11 +180,19 @@ contract StETHAgentTreasury is ReentrancyGuard {
         address agent,
         uint256 amount
     ) external onlyOwner returns (bytes32 requestId) {
+        require(agent != address(0), "Invalid agent address");
+        
         Treasury storage treasury = treasuries[agent];
         
         require(treasury.stETHBalance - amount >= MIN_PRINCIPAL, "Would breach minimum principal");
         
-        requestId = keccak256(abi.encodePacked(agent, amount, block.timestamp, withdrawalCount));
+        requestId = keccak256(abi.encode(
+            agent,
+            amount,
+            block.timestamp,
+            withdrawalCount,
+            msg.sender
+        ));
         
         withdrawalRequests[requestId] = WithdrawalRequest({
             id: requestId,
@@ -199,6 +218,8 @@ contract StETHAgentTreasury is ReentrancyGuard {
         bytes32 requestId,
         address to
     ) external onlyOwner nonReentrant {
+        require(to != address(0), "Invalid to address");
+        
         WithdrawalRequest storage request = withdrawalRequests[requestId];
         
         require(request.id == requestId, "Request not found");
@@ -229,6 +250,8 @@ contract StETHAgentTreasury is ReentrancyGuard {
         uint256 totalValue,
         bool isActive
     ) {
+        require(agent != address(0), "Invalid agent address");
+        
         Treasury storage treasury = treasuries[agent];
         principal = treasury.stETHBalance;
         yieldAccumulated = treasury.yieldAccumulated;
@@ -240,6 +263,7 @@ contract StETHAgentTreasury is ReentrancyGuard {
      * @notice Get withdrawal history for an agent
      */
     function getWithdrawalHistory(address agent) external view returns (bytes32[] memory) {
+        require(agent != address(0), "Invalid agent address");
         return agentWithdrawals[agent];
     }
 }
