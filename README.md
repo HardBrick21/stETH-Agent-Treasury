@@ -94,10 +94,6 @@ await contract.executeWithdrawal(
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Target Track
-
-**stETH Agent Treasury** ($3,000) - Yield-powered AI agent treasury with principal protection
-
 ---
 
 *stETH Treasury - Yield for agents, protection for principals.*
