@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>stETH Agent Treasury - Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
+        .card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-white">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold mb-2">🧱 stETH Agent Treasury</h1>
+            <p class="text-gray-400">Yield-Powered Treasury for AI Agents</p>
+            <div class="mt-4 flex justify-center gap-4">
+                <span class="px-3 py-1 rounded-full text-sm bg-purple-500/20 text-purple-400">Ethereum Mainnet</span>
+            </div>
+        </header>
+
+        <div id="connectionStatus" class="card rounded-xl p-4 mb-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div id="statusDot" class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <span id="statusText" class="text-gray-300">Not Connected</span>
+                </div>
+                <button id="connectBtn" onclick="connectWallet()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition">Connect Wallet</button>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8">
+            <div class="card rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">🏦 Create Treasury</h2>
+                <div class="space-y-4">
+                    <input type="text" id="agentAddress" placeholder="Agent Address (0x...)" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2">
+                    <input type="number" id="initialDeposit" placeholder="Initial Deposit (stETH)" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2">
+                    <button onclick="createTreasury()" class="w-full py-2 bg-purple-600 hover:bg-purple-700 rounded-lg">Create</button>
+                </div>
+            </div>
+
+            <div class="card rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">💰 Request Yield Withdrawal</h2>
+                <div class="space-y-4">
+                    <input type="text" id="withdrawAgentAddress" placeholder="Agent Address" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2">
+                    <input type="number" id="withdrawAmount" placeholder="Amount (stETH)" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2">
+                    <button onclick="requestYieldWithdrawal()" class="w-full py-2 bg-green-600 hover:bg-green-700 rounded-lg">Request</button>
+                </div>
+            </div>
+
+            <div class="card rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">📈 Update Yield</h2>
+                <div class="space-y-4">
+                    <input type="text" id="updateAgentAddress" placeholder="Agent Address" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2">
+                    <button onclick="updateYield()" class="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded-lg">Update</button>
+                </div>
+            </div>
+
+            <div class="card rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">🔍 Get Treasury Info</h2>
+                <div class="space-y-4">
+                    <input type="text" id="infoAgentAddress" placeholder="Agent Address" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2">
+                    <button onclick="getTreasuryInfo()" class="w-full py-2 bg-orange-600 hover:bg-orange-700 rounded-lg">Get Info</button>
+                    <div id="treasuryResult" class="hidden bg-white/5 rounded-lg p-4"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card rounded-xl p-6 mt-8">
+            <h2 class="text-xl font-semibold mb-4">📜 Transaction Log</h2>
+            <div id="txLog" class="space-y-2 max-h-64 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <script>
+        const TREASURY_ADDRESS = '0x0000000000000000000000000000000000000000'; // Replace with deployed address
+        const TREASURY_ABI = [
+            "function createTreasury(address agent, uint256 initialDeposit) external",
+            "function requestYieldWithdrawal(address agent, uint256 amount) external returns (bytes32)",
+            "function updateYield(address agent) public",
+            "function getTreasuryInfo(address agent) external view returns (uint256 principal, uint256 yieldAccumulated, uint256 totalValue, bool isActive)"
+        ];
+
+        let provider, signer, contract;
+
+        async function connectWallet() {
+            if (typeof window.ethereum === 'undefined') {
+                alert('Please install MetaMask!');
+                return;
+            }
+            try {
+                provider = new ethers.BrowserProvider(window.ethereum);
+                await provider.send('eth_requestAccounts', []);
+                signer = await provider.getSigner();
+                contract = new ethers.Contract(TREASURY_ADDRESS, TREASURY_ABI, signer);
+                
+                const address = await signer.getAddress();
+                document.getElementById('statusDot').className = 'w-3 h-3 rounded-full bg-green-500 pulse';
+                document.getElementById('statusText').textContent = `Connected: ${address.slice(0,6)}...${address.slice(-4)}`;
+                document.getElementById('connectBtn').textContent = 'Connected';
+                document.getElementById('connectBtn').disabled = true;
+                log('Connected to wallet: ' + address);
+            } catch (err) {
+                alert('Connection failed: ' + err.message);
+            }
+        }
+
+        async function createTreasury() {
+            if (!contract) return alert('Connect wallet first!');
+            const agent = document.getElementById('agentAddress').value;
+            const deposit = document.getElementById('initialDeposit').value;
+            if (!agent || !deposit) return alert('Fill all fields!');
+            try {
+                const tx = await contract.createTreasury(agent, ethers.parseEther(deposit));
+                log(`Creating treasury for ${agent} with ${deposit} stETH...`);
+                await tx.wait();
+                log(`✅ Treasury created!`);
+            } catch (err) {
+                log(`❌ Error: ${err.message}`);
+            }
+        }
+
+        async function requestYieldWithdrawal() {
+            if (!contract) return alert('Connect wallet first!');
+            const agent = document.getElementById('withdrawAgentAddress').value;
+            const amount = document.getElementById('withdrawAmount').value;
+            if (!agent || !amount) return alert('Fill all fields!');
+            try {
+                const tx = await contract.requestYieldWithdrawal(agent, ethers.parseEther(amount));
+                log(`Requesting ${amount} stETH yield withdrawal for ${agent}...`);
+                await tx.wait();
+                log(`✅ Withdrawal requested! 24-hour cooldown starts now.`);
+            } catch (err) {
+                log(`❌ Error: ${err.message}`);
+            }
+        }
+
+        async function updateYield() {
+            if (!contract) return alert('Connect wallet first!');
+            const agent = document.getElementById('updateAgentAddress').value;
+            if (!agent) return alert('Enter agent address!');
+            try {
+                const tx = await contract.updateYield(agent);
+                log(`Updating yield for ${agent}...`);
+                await tx.wait();
+                log(`✅ Yield updated!`);
+            } catch (err) {
+                log(`❌ Error: ${err.message}`);
+            }
+        }
+
+        async function getTreasuryInfo() {
+            if (!contract) return alert('Connect wallet first!');
+            const agent = document.getElementById('infoAgentAddress').value;
+            if (!agent) return alert('Enter agent address!');
+            try {
+                const info = await contract.getTreasuryInfo(agent);
+                const resultDiv = document.getElementById('treasuryResult');
+                resultDiv.classList.remove('hidden');
+                resultDiv.innerHTML = `
+                    <div class="flex justify-between"><span>Principal:</span><span class="font-bold">${ethers.formatEther(info.principal)} stETH</span></div>
+                    <div class="flex justify-between"><span>Yield Accumulated:</span><span class="font-bold">${ethers.formatEther(info.yieldAccumulated)} stETH</span></div>
+                    <div class="flex justify-between"><span>Total Value:</span><span class="font-bold">${ethers.formatEther(info.totalValue)} stETH</span></div>
+                    <div class="flex justify-between"><span>Active:</span><span>${info.isActive ? '✅' : '❌'}</span></div>
+                `;
+                log(`Retrieved treasury info for ${agent}`);
+            } catch (err) {
+                log(`❌ Error: ${err.message}`);
+            }
+        }
+
+        function log(msg) {
+            const logEl = document.getElementById('txLog');
+            const time = new Date().toLocaleTimeString();
+            logEl.innerHTML = `<div class="text-sm"><span class="text-gray-500">[${time}]</span> ${msg}</div>` + logEl.innerHTML;
+        }
+    </script>
+</body>
+</html>
