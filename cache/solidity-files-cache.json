@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/root/.openclaw/workspace/synthesis/steth-agent-treasury/contracts/StETHAgentTreasury.sol": {
-      "lastModificationDate": 1774065039543,
-      "contentHash": "fe3763a2f0c6da82f73b32bd083e4809",
+      "lastModificationDate": 1774178875474,
+      "contentHash": "f2573d173f428318135e3ae40238cd35",
       "sourceName": "contracts/StETHAgentTreasury.sol",
       "solcConfig": {
         "version": "0.8.20",

@@ -266,4 +266,73 @@ contract StETHAgentTreasury is ReentrancyGuard {
         require(agent != address(0), "Invalid agent address");
         return agentWithdrawals[agent];
     }
+    
+    /**
+     * @notice Get withdrawal request details
+     */
+    function getWithdrawalRequest(bytes32 requestId) external view returns (
+        address agent,
+        uint256 amount,
+        uint256 requestedAt,
+        bool isYield,
+        bool executed,
+        bool canExecute
+    ) {
+        WithdrawalRequest storage request = withdrawalRequests[requestId];
+        require(request.id == requestId, "Request not found");
+        
+        agent = request.agent;
+        amount = request.amount;
+        requestedAt = request.requestedAt;
+        isYield = request.isYield;
+        executed = request.executed;
+        canExecute = !request.executed && block.timestamp >= request.requestedAt + 1 days;
+    }
+    
+    /**
+     * @notice Cancel a pending withdrawal request
+     */
+    function cancelWithdrawalRequest(bytes32 requestId) external {
+        WithdrawalRequest storage request = withdrawalRequests[requestId];
+        
+        require(request.id == requestId, "Request not found");
+        require(!request.executed, "Already executed");
+        require(msg.sender == owner || msg.sender == request.agent, "Not authorized");
+        
+        // If yield withdrawal, return yield to agent
+        if (request.isYield) {
+            Treasury storage treasury = treasuries[request.agent];
+            treasury.yieldAccumulated += request.amount;
+        }
+        
+        // Mark as executed to prevent reuse
+        request.executed = true;
+    }
+    
+    /**
+     * @notice Deposit additional stETH to an existing treasury
+     */
+    function depositToTreasury(address agent, uint256 amount) external onlyOwner nonReentrant {
+        require(agent != address(0), "Invalid agent address");
+        require(amount > 0, "Amount must be greater than 0");
+        
+        Treasury storage treasury = treasuries[agent];
+        require(treasury.isActive, "Treasury not active");
+        
+        // Transfer stETH from owner
+        IERC20(STETH).transferFrom(msg.sender, address(this), amount);
+        
+        treasury.stETHBalance += amount;
+        totalTreasuryBalance += amount;
+        
+        emit PrincipalProtected(agent, treasury.stETHBalance);
+    }
+    
+    /**
+     * @notice Transfer ownership
+     */
+    function transferOwnership(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "Invalid new owner");
+        owner = newOwner;
+    }
 }
