@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="50%" style="stop-color:#16213e"/>
+      <stop offset="100%" style="stop-color:#0f3460"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8b5cf6"/>
+      <stop offset="100%" style="stop-color:#7c3aed"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Grid pattern -->
+  <g opacity="0.1">
+    <line x1="0" y1="100" x2="1200" y2="100" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="200" x2="1200" y2="200" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="300" x2="1200" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="400" x2="1200" y2="400" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="500" x2="1200" y2="500" stroke="white" stroke-width="1"/>
+    <line x1="200" y1="0" x2="200" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="400" y1="0" x2="400" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="600" y1="0" x2="600" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="800" y1="0" x2="800" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="1000" y1="0" x2="1000" y2="630" stroke="white" stroke-width="1"/>
+  </g>
+  
+  <!-- Brick emoji -->
+  <text x="100" y="180" font-size="120">🧱</text>
+  
+  <!-- Title -->
+  <text x="100" y="280" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white">stETH Agent Treasury</text>
+  
+  <!-- Tagline -->
+  <text x="100" y="340" font-family="Arial, sans-serif" font-size="28" fill="#9ca3af">Yield-Powered Treasury for AI Agents</text>
+  
+  <!-- Treasury features -->
+  <g transform="translate(100, 400)">
+    <!-- Yield -->
+    <rect x="0" y="0" width="220" height="80" rx="8" fill="#8b5cf6"/>
+    <text x="110" y="32" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">Yield</text>
+    <text x="110" y="58" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">Staking rewards</text>
+    
+    <!-- Protection -->
+    <rect x="260" y="0" width="220" height="80" rx="8" fill="#7c3aed"/>
+    <text x="370" y="32" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">Protection</text>
+    <text x="370" y="58" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">0.1 stETH min</text>
+    
+    <!-- Agent Control -->
+    <rect x="520" y="0" width="220" height="80" rx="8" fill="#8b5cf6"/>
+    <text x="630" y="32" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">Agent Control</text>
+    <text x="630" y="58" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">Withdraw yield</text>
+    
+    <!-- Cooldown -->
+    <rect x="780" y="0" width="220" height="80" rx="8" fill="#7c3aed"/>
+    <text x="890" y="32" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">Cooldown</text>
+    <text x="890" y="58" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">24-hour security</text>
+  </g>
+  
+  <!-- stETH badge -->
+  <rect x="1000" y="50" width="150" height="40" rx="20" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)"/>
+  <text x="1075" y="76" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle">Ethereum Mainnet</text>
+</svg>
