@@ -1,6 +1,19 @@
 # stETH Agent Treasury
 
-> Yield-powered treasury for AI agents using stETH - Earn yield while protecting principal
+[![Synthesis Submission](https://img.shields.io/badge/Synthesis-Submit-blue?logo=gitbook)](https://synthesis.devfolio.co/projects/steth-agent-treasury-xxx)
+
+Yield-powered treasury for AI agents using stETH - Earn yield while protecting principal
+
+## 🏆 Synthesis Hackathon Submission
+
+- **Track**: stETH Agent Treasury
+- **Status**: ✅ Published
+- **Demo**: https://hardbrick21.github.io/stETH-Agent-Treasury/
+- **GitHub**: https://github.com/HardBrick21/stETH-Agent-Treasury
+
+## 📋 Cover Image
+
+![stETH Agent Treasury Cover](https://raw.githubusercontent.com/HardBrick21/stETH-Agent-Treasury/main/cover.svg)
 
 ## Overview
 
@@ -31,69 +44,60 @@ This project creates a treasury system for AI agents using Lido's stETH. Agents 
 
 ## Quick Start
 
+### Installation
+
 ```bash
-# Install dependencies
 npm install
+```
 
-# Compile
+### Compile
+
+```bash
 npx hardhat compile
-
-# Deploy to mainnet
-npx hardhat run scripts/deploy.js --network mainnet
 ```
 
-## Usage
+### Test
 
-### Create Treasury
-
-```javascript
-// Deposit 10 stETH for an agent
-await contract.createTreasury(
-  agentAddress,
-  ethers.parseEther("10") // 10 stETH
-);
+```bash
+npx hardhat test
 ```
 
-### Request Yield Withdrawal
+### Deploy
 
-```javascript
-// Agent requests to withdraw 1 stETH of yield
-await contract.requestYieldWithdrawal(
-  agentAddress,
-  ethers.parseEther("1")
-);
+```bash
+npx hardhat run scripts/deploy.js --network <network>
 ```
 
-### Execute Withdrawal
+## 🛠️ Tech Stack
 
-```javascript
-// Owner executes after cooldown
-await contract.executeWithdrawal(
-  requestId,
-  recipientAddress
-);
-```
+- Solidity
+- Hardhat
+- OpenZeppelin
+- Lido (stETH)
+- wstETH
 
-## Treasury Structure
+## 📁 Project Structure
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    stETH Agent Treasury                      │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│   Principal (Protected)                                      │
-│   ├── Minimum: 0.1 stETH                                     │
-│   ├── Cannot be withdrawn by agent                          │
-│   └── Owner-controlled with cooldown                        │
-│                                                              │
-│   Yield (Accessible)                                         │
-│   ├── Accumulated from staking rewards                       │
-│   ├── Agent can withdraw                                     │
-│   └── No cooldown required                                   │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
-```
+- `contracts/` - Smart contracts
+- `frontend/` - Frontend application
+- `scripts/` - Deployment scripts
+- `test/` - Test files
+
+## 📖 Documentation
+
+- [AGENTS.md](./AGENTS.md) - Agent documentation
+
+## 🤝 Team
+
+- **AI Agent**: Brick stETH
+- **Human**: hardbrick
+
+## 📅 Timeline
+
+- Started: March 20, 2026
+- Submitted: March 22, 2026
+- Published: March 22, 2026
 
 ---
 
-*stETH Treasury - Yield for agents, protection for principals.*
+*Built with OpenClaw Agent Platform*
